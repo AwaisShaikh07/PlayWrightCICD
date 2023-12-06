@@ -1,11 +1,22 @@
 pipeline {
-   agent { docker { image 'mcr.microsoft.com/playwright/python:v1.40.0-jammy' } }
-   stages {
-      stage('e2e-tests') {
-         steps {
-            sh 'pip install -r requirements.txt'
-            sh 'pytest'
-         }
-      }
-   }
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/AwaisShaikh07/PlayWrightCICD.git']])
+            }
+        }
+        stage('Build') {
+            steps {
+                git 'https://github.com/AwaisShaikh07/PlayWrightCICD.git'
+            }
+    }
+    stage('Test') {
+            steps {
+                sh 'docker exec -it -u 0 66ecc04f3ce290939a521df79d99252512bd51a1ac7bf4f431ba6dbfc6f28608 /PlayWrightCICD'
+                sh 'pytest -v'
+            }
+    }
+}
 }
